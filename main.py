@@ -75,8 +75,8 @@ def simulate(knapsack_problem, population_size, number_of_iterations, score, sel
     print("whole score log: " + str(scores_log))
 
 def solve_problem():
-    # problem = import_knapsack_problem_from_file("low-dimensional/f10_l-d_kp_20_879")
-    problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
+    problem = import_knapsack_problem_from_file("low-dimensional/f10_l-d_kp_20_879")
+    # problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
     population_size = 200
     number_of_iterations = 200
     #chanse for each chromosome to perform crossover - one roll per chromosome
@@ -86,6 +86,8 @@ def solve_problem():
 
     # Notes:
     # - jak masz jakieś sugestie czy coś to pisz tutaj i daj tylko znać na messangerze
+    # - chcemy dodawać mieć możliwość dawania seed'a dzięki czemu algorytm będzie deterministyczny i będzie można
+    # zobaczyć jak wpływają zmiany parametrów na niego?
 
     simulate(problem, population_size, number_of_iterations, score, rullet_selection,
              one_point_crossover, crossover_procentage, mutation, mutation_procentage)
