@@ -4,8 +4,17 @@ from Algorithms import crossover_executor, score, rullet_selection, one_point_cr
 from Chromosome import Chromosome
 from KnapsackProblem import KnapsackProblem
 
+def print_optimum_solution(file_name):
+    direction, problem = file_name.split("/")
+    direction += "-optimum"
+
+    with open("./dane_AG/" + direction + "/" + problem, "r") as file:
+        print("Optimal solution = " + file.readline())
+
 # Extract data from file
 def import_knapsack_problem_from_file(file_name):
+    print_optimum_solution(file_name)
+
     with open("./dane_AG/" + file_name, "r") as file:
         size, weight = file.readline().split(" ")
         data = []
@@ -66,8 +75,8 @@ def simulate(knapsack_problem, population_size, number_of_iterations, score, sel
     print("whole score log: " + str(scores_log))
 
 def solve_problem():
-    problem = import_knapsack_problem_from_file("low-dimensional/f10_l-d_kp_20_879")
-    # problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
+    # problem = import_knapsack_problem_from_file("low-dimensional/f10_l-d_kp_20_879")
+    problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
     population_size = 200
     number_of_iterations = 200
     #chanse for each chromosome to perform crossover - one roll per chromosome
