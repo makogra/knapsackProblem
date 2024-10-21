@@ -70,8 +70,13 @@ def solve_problem():
     # problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
     population_size = 200
     number_of_iterations = 200
+    #chanse for each chromosome to perform crossover - one roll per chromosome
     crossover_procentage = 0.30
+    # roll for every gene in every chromosome
     mutation_procentage = 0.01
+
+    # Notes:
+    # - jak masz jakieś sugestie czy coś to pisz tutaj i daj tylko znać na messangerze
 
     simulate(problem, population_size, number_of_iterations, score, rullet_selection,
              one_point_crossover, crossover_procentage, mutation, mutation_procentage)
