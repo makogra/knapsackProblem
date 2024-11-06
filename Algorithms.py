@@ -33,14 +33,15 @@ def mutation(procentage = None, chromosome = None):
 
 def one_point_crossover(chromosome1 = None, chromosome2 = None):
     index = round(len(chromosome1.gens) * random())
-    crossover_product = chromosome1.gens[:index] + chromosome2.gens[index:]
+    crossover_product1 = chromosome1.gens[:index] + chromosome2.gens[index:]
+    crossover_product2 = chromosome2.gens[:index] + chromosome1.gens[index:]
 
-    return Chromosome(gens=crossover_product)
+    return [Chromosome(gens=crossover_product1), Chromosome(gens=crossover_product2)]
 
 def crossover_executor(procentage = None, crossover_implementation = None, chromosome1 = None, chromosome2 = None):
     if procentage > random():
         return crossover_implementation(chromosome1, chromosome2)
-    return chromosome1
+    return [chromosome1, chromosome2]
 
 def rullet_selection(population = None):
     new_population = []
