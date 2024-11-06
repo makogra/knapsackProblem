@@ -46,10 +46,18 @@ def get_best_score(population, score_function, knapsack_problem):
 def simulate(knapsack_problem, population_size, number_of_iterations, score, selection, crossover, crossover_procentage, mutation, mutation_procentage):
     population = setup_population(population_size, knapsack_problem)
     scores_log = []
+    numbers_of_chromosomes_with_score_0 = []
     #score init population
     scores_log.append(get_best_score(population, score, knapsack_problem))
+    # print("----------------------------------------------------------------------------------------")
+    # print("Setup population: ")
+    # for chro in population:
+    #     print(chro)
+    # print("----------------------------------------------------------------------------------------")
+    first_iteration = True
     for _ in range(number_of_iterations):
         current_best_score = 0
+        number_of_chromosomes_with_score_0_in_current_population = 0
         for index, chromosome in enumerate(population):
             # look for crossover
             index_for_crossover = round(population_size * random()) -1
@@ -64,8 +72,20 @@ def simulate(knapsack_problem, population_size, number_of_iterations, score, sel
             # find best score for logging
             current_best_score = max(current_best_score, population[index].score)
 
+            if population[index].score == 0:
+                number_of_chromosomes_with_score_0_in_current_population += 1
+
+            # if first_iteration:
+            #     print("========================================================================================")
+            #     print("After first iteration: ")
+            #     for chro in population:
+            #         print(chro)
+            #     print("========================================================================================")
+            #     first_iteration = False
         # log best value for iteration
         scores_log.append(current_best_score)
+
+        numbers_of_chromosomes_with_score_0.append(number_of_chromosomes_with_score_0_in_current_population)
 
         # exaciute selection
         population = selection(population)
@@ -73,16 +93,17 @@ def simulate(knapsack_problem, population_size, number_of_iterations, score, sel
 
     print("final score = " + str(scores_log[-1]))
     print("whole score log: " + str(scores_log))
+    print("Nummer of chromosomes with score equals to 0 throughout each population: " + str(numbers_of_chromosomes_with_score_0))
 
 def solve_problem():
-    problem = import_knapsack_problem_from_file("low-dimensional/f10_l-d_kp_20_879")
-    # problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
-    population_size = 200
-    number_of_iterations = 200
+    # problem = import_knapsack_problem_from_file("low-dimensional/f10_l-d_kp_20_879")
+    problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
+    population_size = 8000
+    number_of_iterations = 10
     #chanse for each chromosome to perform crossover - one roll per chromosome
-    crossover_procentage = 0.30
+    crossover_procentage = 0.70
     # roll for every gene in every chromosome
-    mutation_procentage = 0.01
+    mutation_procentage = 0.05
 
     # Notes:
     # - jak masz jakieś sugestie czy coś to pisz tutaj i daj tylko znać na messangerze

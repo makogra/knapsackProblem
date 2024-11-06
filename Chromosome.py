@@ -42,3 +42,7 @@ class Chromosome:
                     total_weight += knapsack_problem.data[index][1]
                 gens.append(gen)
         self.gens = gens
+
+    def __str__(self):
+        return f"Last updated score: {self.score}, genomes: {str(self.gens)}"
+
