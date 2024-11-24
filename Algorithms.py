@@ -1,9 +1,10 @@
 from random import random
 
 from Chromosome import Chromosome
+from KnapsackProblem import KnapsackProblem
 
 
-def score(knapsack_problem = None, chromosome = None):
+def score(knapsack_problem: KnapsackProblem, chromosome: Chromosome):
     total_value = 0
     total_weight = 0
 
@@ -43,21 +44,31 @@ def crossover_executor(procentage = None, crossover_implementation = None, chrom
         return crossover_implementation(chromosome1, chromosome2)
     return [chromosome1, chromosome2]
 
-def rullet_selection(population = None):
+def roulette_selection(population = None):
     new_population = []
-    total_score = 0
-    for chromosome in population:
-        total_score += chromosome.score
+    total_score = sum(chromosome.score for chromosome in population)
 
     for _ in range(len(population)):
         rullet_spin = total_score * random()
         i = 0
-        while rullet_spin > 0:
+        while rullet_spin > 0 and i < len(population):
             rullet_spin -= population[i].score
             i += 1
         new_population.append(population[i-1])
 
     return new_population
+
+def ranking_selection(population = None):
+    new_population = []
+    sorted_population = sorted(population, key=lambda item: item.score, reverse=True)
+
+    for index, chromosome in enumerate(sorted_population):
+        # https://www.desmos.com/calculator/e8acc8mzfz
+        for _ in range(round(4*(1-2*index)/(1+len(population)))):
+            new_population.append(chromosome)
+    new_population = new_population[0:len(population)]
+    return new_population
+
 
 class Algorithms:
     pass
