@@ -2,7 +2,8 @@ from functools import cmp_to_key
 from itertools import product
 from random import random
 
-from Algorithms import crossover_executor, score, roulette_selection, one_point_crossover, mutation, ranking_selection
+from Algorithms import crossover_executor, score, roulette_selection, one_point_crossover, mutation, ranking_selection, \
+    tournament_selection
 from Chromosome import Chromosome
 from KnapsackProblem import KnapsackProblem
 
@@ -133,10 +134,11 @@ def update_population_scores(population, score, knapsack_problem):
 
 def run_simulations():
     # Define parameter ranges
-    population_sizes = [50, 500]
+    population_sizes = [500]
     crossover_percentages = [0.5]
     mutation_percentages = [0.1]
     no_elites_values = [3]
+    selection = [roulette_selection, ranking_selection, tournament_selection]
 
     # Define the knapsack problem instances
     knapsack_problems = [
@@ -160,8 +162,8 @@ def run_simulations():
         lines.append(print_optimum_solution(problem_file))
 
         # Generate all parameter combinations
-        for population_size, crossover_percentage, mutation_percentage, no_elites in product(
-                population_sizes, crossover_percentages, mutation_percentages, no_elites_values):
+        for population_size, crossover_percentage, mutation_percentage, no_elites, selection in product(
+                population_sizes, crossover_percentages, mutation_percentages, no_elites_values, selection):
             # Define the number of iterations and any other static parameters
             number_of_iterations = 100
 
@@ -171,7 +173,7 @@ def run_simulations():
                 population_size=population_size,
                 number_of_iterations=number_of_iterations,
                 score=score,
-                selection=ranking_selection,
+                selection=selection,
                 crossover=one_point_crossover,
                 crossover_percentage=crossover_percentage,
                 mutation=mutation,
@@ -181,7 +183,7 @@ def run_simulations():
             lines.append(result)
 
             # Optional: Print or log the current configuration to track progress
-            print(f"Completed simulation for {problem_file} with ranking selection and parameters:")
+            print(f"Completed simulation for {problem_file} with {selection} and parameters:")
             print(f"Population Size: {population_size}, Crossover %: {crossover_percentage}, "
                   f"Mutation %: {mutation_percentage}, Number of Elites: {no_elites}")
 

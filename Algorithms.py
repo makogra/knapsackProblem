@@ -1,4 +1,5 @@
 from random import random
+from tokenize import group
 
 from Chromosome import Chromosome
 from KnapsackProblem import KnapsackProblem
@@ -67,6 +68,17 @@ def ranking_selection(population = None):
         for _ in range(round(4*(1-2*index)/(1+len(population)))):
             new_population.append(chromosome)
     new_population = new_population[0:len(population)]
+    return new_population
+
+def tournament_selection(population = None):
+    new_population = []
+    group_size = 10
+
+    while len(new_population) < len(population):
+        tournament_group = []
+        for _ in range(group_size):
+            tournament_group.append(int(len(population) * random()))
+        new_population.append(max(tournament_group))
     return new_population
 
 
