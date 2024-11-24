@@ -40,6 +40,12 @@ def one_point_crossover(chromosome1 = None, chromosome2 = None):
 
     return [Chromosome(gens=crossover_product1), Chromosome(gens=crossover_product2)]
 
+
+def two_point_crossover(chromosome1 = None, chromosome2 = None):
+    one_point = one_point_crossover(chromosome1, chromosome2)
+    return one_point_crossover(one_point[0], one_point[1])
+
+
 def crossover_executor(procentage = None, crossover_implementation = None, chromosome1 = None, chromosome2 = None):
     if procentage > random():
         return crossover_implementation(chromosome1, chromosome2)
