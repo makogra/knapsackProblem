@@ -83,8 +83,9 @@ def tournament_selection(population = None):
     while len(new_population) < len(population):
         tournament_group = []
         for _ in range(group_size):
-            tournament_group.append(int(len(population) * random()))
-        new_population.append(max(tournament_group))
+            index = int(len(population) * random())
+            tournament_group.append(population[index])
+        new_population.append(sorted(tournament_group, key=lambda item: item.score, reverse=True)[0])
     return new_population
 
 

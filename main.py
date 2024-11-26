@@ -138,7 +138,7 @@ def run_simulations():
     crossover_percentages = [0.5]
     mutation_percentages = [0.1]
     no_elites_values = [3]
-    selection = [roulette_selection, ranking_selection, tournament_selection]
+    selection_names = [0, 1, 2]
 
     # Define the knapsack problem instances
     knapsack_problems = [
@@ -162,11 +162,16 @@ def run_simulations():
         lines.append(print_optimum_solution(problem_file))
 
         # Generate all parameter combinations
-        for population_size, crossover_percentage, mutation_percentage, no_elites, selection in product(
-                population_sizes, crossover_percentages, mutation_percentages, no_elites_values, selection):
+        for population_size, crossover_percentage, mutation_percentage, no_elites, selection_name in product(
+                population_sizes, crossover_percentages, mutation_percentages, no_elites_values, selection_names):
             # Define the number of iterations and any other static parameters
             number_of_iterations = 100
-
+            if selection_name == 0:
+                selection = roulette_selection
+            elif selection_name == 1:
+                selection = ranking_selection
+            else:
+                selection = tournament_selection
             # Run the simulation for the current parameter combination
             result = simulate(
                 knapsack_problem=problem,
@@ -183,12 +188,12 @@ def run_simulations():
             lines.append(result)
 
             # Optional: Print or log the current configuration to track progress
-            print(f"Completed simulation for {problem_file} with {selection} and parameters:")
+            print(f"Completed simulation for {problem_file} with {selection.__name__} selection and parameters:")
             print(f"Population Size: {population_size}, Crossover %: {crossover_percentage}, "
                   f"Mutation %: {mutation_percentage}, Number of Elites: {no_elites}")
 
             lines.append(f"Population Size: {population_size}, Crossover %: {crossover_percentage}, "
-                  f"Mutation %: {mutation_percentage}, Number of Elites: {no_elites}")
+                  f"Mutation %: {mutation_percentage}, Number of Elites: {no_elites}, Selection implementation: {selection.__name__}")
         with open("./results/" + problem_file, "w") as file:
             for line in lines:
                 file.write(line)
