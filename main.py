@@ -1,11 +1,11 @@
-from functools import cmp_to_key
 from itertools import product
 from random import random
 
-from Algorithms import crossover_executor, score, roulette_selection, one_point_crossover, mutation, ranking_selection, \
-    tournament_selection
+from Algorithms import crossover_executor, score, roulette_selection, one_point_crossover, mutation, \
+    tournament_selection, two_point_crossover
 from Chromosome import Chromosome
 from KnapsackProblem import KnapsackProblem
+
 
 def print_optimum_solution(file_name):
     direction, problem = file_name.split("/")
@@ -15,19 +15,13 @@ def print_optimum_solution(file_name):
         result = "Optimal solution = " + file.readline()
     return result
 
-# Extract data from file
 def import_knapsack_problem_from_file(file_name):
-    # print(print_optimum_solution(file_name))
-
     with open("./dane_AG/" + file_name, "r") as file:
         size, weight = file.readline().split(" ")
         data = []
         for line in file.readlines():
-            # print("line = " + line)
             value_weight_pair = [float(numeric_string) for numeric_string in line.split(" ")]
-            # data.append(line.split(" "))
             data.append(value_weight_pair)
-
     return KnapsackProblem(size, weight, data)
 
 def setup_population(population_size, knapsack_problem):
@@ -65,12 +59,6 @@ def simulate(knapsack_problem, population_size, number_of_iterations, score, sel
     numbers_of_chromosomes_with_score_0 = []
     #score init population
     scores_log.append(get_best_score(population, score, knapsack_problem))
-    # print("----------------------------------------------------------------------------------------")
-    # print("Setup population: ")
-    # for chro in population:
-    #     print(chro)
-    # print("----------------------------------------------------------------------------------------")
-    first_iteration = True
     for _ in range(number_of_iterations):
         current_best_score = 0
         number_of_chromosomes_with_score_0_in_current_population = 0
@@ -95,11 +83,7 @@ def simulate(knapsack_problem, population_size, number_of_iterations, score, sel
 
         numbers_of_chromosomes_with_score_0.append(number_of_chromosomes_with_score_0_in_current_population)
 
-    # print("final score = " + str(scores_log[-1]))
-    # print("whole score log: " + str(scores_log))
     return ("whole score log: " + str(scores_log))
-    # print("Nummer of chromosomes with score equals to 0 throughout each population: " + str(numbers_of_chromosomes_with_score_0))
-
 
 def logging(current_best_score, number_of_chromosomes_with_score_0_in_current_population, population):
     for chromosome in population:
@@ -128,17 +112,15 @@ def look_for_crossover(crossover, crossover_procentage, population):
 
 def update_population_scores(population, score, knapsack_problem):
     for index in range(len(population)):
-        # print(f"last score for chromosome at index {index} = {population[index].score}")
         population[index].score = score(knapsack_problem, population[index])
 
 
 def run_simulations():
     # Define parameter ranges
     population_sizes = [500]
-    crossover_percentages = [0.5]
-    mutation_percentages = [0.1]
+    crossover_percentages = [0.7]
+    mutation_percentages = [0.05]
     no_elites_values = [3]
-    selection_names = [0, 1, 2]
 
     # Define the knapsack problem instances
     knapsack_problems = [
@@ -155,31 +137,26 @@ def run_simulations():
         "low-dimensional/f9_l-d_kp_5_80"
     ]
 
-    # Iterate over every combination of parameters
     for problem_file in knapsack_problems:
         problem = import_knapsack_problem_from_file(problem_file)
         lines = []
         lines.append(print_optimum_solution(problem_file))
 
-        # Generate all parameter combinations
-        for population_size, crossover_percentage, mutation_percentage, no_elites, selection_name in product(
-                population_sizes, crossover_percentages, mutation_percentages, no_elites_values, selection_names):
-            # Define the number of iterations and any other static parameters
+        for population_size, crossover_percentage, mutation_percentage, no_elites, crossover_name in product(
+                population_sizes, crossover_percentages, mutation_percentages, no_elites_values, crossover_names):
             number_of_iterations = 100
-            if selection_name == 0:
-                selection = roulette_selection
-            elif selection_name == 1:
-                selection = ranking_selection
+            if crossover_name == 0:
+                crossover_implementation = one_point_crossover
             else:
-                selection = tournament_selection
-            # Run the simulation for the current parameter combination
+                crossover_implementation = two_point_crossover
+
             result = simulate(
                 knapsack_problem=problem,
                 population_size=population_size,
                 number_of_iterations=number_of_iterations,
                 score=score,
-                selection=selection,
-                crossover=one_point_crossover,
+                selection=tournament_selection,
+                crossover=crossover_implementation,
                 crossover_percentage=crossover_percentage,
                 mutation=mutation,
                 mutation_percentage=mutation_percentage,
@@ -187,13 +164,8 @@ def run_simulations():
             )
             lines.append(result)
 
-            # Optional: Print or log the current configuration to track progress
-            print(f"Completed simulation for {problem_file} with {selection.__name__} selection and parameters:")
-            print(f"Population Size: {population_size}, Crossover %: {crossover_percentage}, "
-                  f"Mutation %: {mutation_percentage}, Number of Elites: {no_elites}")
-
             lines.append(f"Population Size: {population_size}, Crossover %: {crossover_percentage}, "
-                  f"Mutation %: {mutation_percentage}, Number of Elites: {no_elites}, Selection implementation: {selection.__name__}")
+                  f"Mutation %: {mutation_percentage}, Number of Elites: {no_elites}, Crossover implementation: {crossover_implementation.__name__}")
         with open("./results/" + problem_file, "w") as file:
             for line in lines:
                 file.write(line)
@@ -202,7 +174,6 @@ def run_simulations():
 
 def solve_problem():
     problem = import_knapsack_problem_from_file("low-dimensional/f1_l-d_kp_10_269")
-    # problem = import_knapsack_problem_from_file("large_scale/knapPI_1_1000_1000_1")
     population_size = 10
     number_of_iterations = 200
     #chanse for each chromosome to perform crossover - one roll per chromosome
@@ -210,11 +181,6 @@ def solve_problem():
     # roll for every gene in every chromosome
     mutation_procentage = 0.1
     no_elites = 3
-
-    # Notes:
-    # - jak masz jakieś sugestie czy coś to pisz tutaj i daj tylko znać na messangerze
-    # - chcemy dodawać mieć możliwość dawania seed'a dzięki czemu algorytm będzie deterministyczny i będzie można
-    # zobaczyć jak wpływają zmiany parametrów na niego?
 
     simulate(problem, population_size, number_of_iterations, score, roulette_selection,
              one_point_crossover, crossover_procentage, mutation, mutation_procentage, no_elites)

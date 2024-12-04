@@ -1,5 +1,4 @@
 from random import random
-from tokenize import group
 
 from Chromosome import Chromosome
 from KnapsackProblem import KnapsackProblem
